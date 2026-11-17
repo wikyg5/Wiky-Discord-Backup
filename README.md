@@ -1,4 +1,4 @@
-# 🛡️L-BOT-BUCKUPS — Backups completos para Discord
+# 🛡️L-BOT-BACKUPS — Backups completos para Discord
 
 Bot de Discord con estética minimalista (negro, gris y blanco) que crea copias de seguridad **completas** de tu servidor y lo reconstruye exactamente igual.
 
