@@ -1,38 +1,117 @@
-# 🛡️L-BOT-BACKUPS — Backups completos para Discord
+# L-BOT-BACKUPS
 
-Bot de Discord con estética minimalista (negro, gris y blanco) que crea copias de seguridad **completas** de tu servidor y lo reconstruye exactamente igual.
+<p align="center">
+  <strong>Bot modular para Discord que crea copias completas de servidores y las restaura en otro servidor.</strong>
+</p>
 
-## ✨ Qué se guarda
+<p align="center">
+  <a href="#características">Características</a> •
+  <a href="#comandos">Comandos</a> •
+  <a href="#instalación">Instalación</a> •
+  <a href="#configuración">Configuración</a> •
+  <a href="#licencia">Licencia</a>
+</p>
 
-Cada backup (formato v2) guarda absolutamente toda la configuración de permisos y ajustes:
+## Características
 
-- **Roles**: nombre, color, colores degradados, permisos, jerarquía (posición), hoist, mencionable, emoji/icono, roles gestionados.
-- **@everyone**: sus permisos globales del servidor.
-- **Categorías**: nombre, posición y **todos sus permisos** (overwrites).
-- **Canales** de todo tipo:
-  - Texto y anuncios: tema, NSFW, slowmode, archivado automático.
-  - Voz y escenarios: bitrate, límite de usuarios, región, calidad de vídeo.
-  - Foros y media: etiquetas, reacción por defecto, orden, layout, slowmode de hilos.
-  - **Permisos por rol y por miembro** en cada canal y categoría.
-- **Orden** de canales y categorías.
-- **Emojis** personalizados.
-- **Expulsiones (bans)** con su motivo.
-- **Ajustes del servidor**: nombre, icono, banner, descripción, nivel de verificación, notificaciones por defecto, filtro de contenido, canal AFK y su tiempo, canal del sistema y sus flags, canal de reglas, canal de anuncios, idioma, MFA, nivel de boost y features.
+- **Backups completos** de roles, canales, categorías, permisos, emojis y ajustes del servidor.
+- **Restauración flexible**: conserva el servidor actual o reemplaza completamente su contenido.
+- **Backups automáticos** con detección de cambios y retención configurable.
+- **Gestor visual** mediante paneles y botones, sin depender exclusivamente de comandos.
+- **Asignación masiva de roles** y limpieza controlada del servidor.
+- **Interfaz personalizable** con banner, marca, emojis personalizados y variantes monocromas.
+- **Backup de sanciones**, disponible opcionalmente al reconstruir.
 
-> Los backups antiguos (v1) siguen siendo legibles, aunque solo contienen roles y canales básicos.
+> La restauración no puede recuperar mensajes ni hilos debido a las limitaciones de la API de Discord.
 
-## 💎 Estética
+## Comandos
 
-Los embeds usan:
+| Comando | Descripción |
+|---|---|
+| `/hacerbackup` | Crea un backup completo del servidor. |
+| `/backups` | Lista, inspecciona, restaura o elimina backups. |
+| `/reconstruir codigo [modo] [sanciones]` | Reconstruye el servidor desde un código. |
+| `/darrol rol` | Asigna un rol a todos los miembros con confirmación. |
+| `/limpiar` | Elimina canales y roles después de pedir confirmación. |
+| `/estado` | Muestra intervalos, retención y último backup. |
+| `/ayuda` | Abre la guía visual de comandos. |
 
-- Estética monocroma: barra negra, texto blanco y notas en gris claro. Sin colores de acento.
-- Banner propio adjunto en los paneles (`assets/banner.jpg`), sin depender de hosting externo.
-- Jerarquía tipográfica: títulos grandes, etiquetas pequeñas en gris (`-#`), valores en monoespaciado y campos organizados en columnas.
-- **Emojis personalizados** monocromos estilo *tile* negro con icono blanco (pack en `assets/emojis/`).
-- Botones grises con emoji; el rojo se reserva para acciones destructivas.
-- Pie de página con la marca y fecha dinámica.
+Todos los paneles tienen botones para las acciones principales.
 
-Se puede personalizar desde `.env` sin tocar código:
+## Modos de restauración
+
+### Conservar y restaurar
+
+Crea o actualiza roles, canales y permisos sin borrar primero el contenido existente. Es el modo recomendado.
+
+### Reemplazar todo
+
+Elimina contenido compatible y reconstruye el servidor desde cero, incluyendo ajustes, icono, banner y descripción cuando Discord lo permita.
+
+## Instalación
+
+### Requisitos
+
+- Windows con PowerShell
+- Node.js y npm
+- Una aplicación y bot creados en el [Portal de Discord](https://discord.com/developers/applications)
+- Permiso de **Administrador** recomendado para restauraciones completas
+
+### 1. Crear el bot
+
+1. Crea una aplicación en el Portal de Discord.
+2. Abre **Bot** y pulsa **Add Bot**.
+3. Copia el token.
+4. Activa `SERVER MEMBERS INTENT`.
+5. Activa `MESSAGE CONTENT INTENT` si tu configuración lo necesita.
+
+### 2. Invitar el bot
+
+Añade el bot con los scopes `bot` y `applications.commands`, otorgando permiso de Administrador.
+
+El rol del bot debe estar situado por encima de los roles que necesite gestionar.
+
+### 3. Configurar
+
+```cmd
+npm install
+copy .env.example .env
+```
+
+Edita `.env`:
+
+```env
+DISCORD_TOKEN=tu_token
+CLIENT_ID=tu_client_id
+```
+
+Puedes usar `GUILD_ID` durante el desarrollo para publicar los comandos en un servidor concreto:
+
+```env
+GUILD_ID=tu_guild_id
+```
+
+### 4. Ejecutar
+
+```cmd
+npm start
+```
+
+## Configuración
+
+Variables principales:
+
+| Variable | Uso | Predeterminado |
+|---|---|---|
+| `DISCORD_TOKEN` | Token del bot | Requerido |
+| `CLIENT_ID` | ID de la aplicación | Requerido |
+| `GUILD_ID` | Comandos solo en un servidor | Global |
+| `BACKUP_INTERVAL_MINUTES` | Intervalo entre ciclos automáticos | `60` |
+| `MAX_BACKUPS_PER_GUILD` | Cantidad máxima de backups automáticos por servidor | `10` |
+| `BACKUP_LOG_CHANNEL_ID` | Canal para avisos de backup automático | Opcional |
+| `CUSTOM_EMOJIS` | Activar emojis personalizados | `true` |
+
+Personalización visual opcional:
 
 ```env
 BRAND_NAME=L-BOT SHOP
@@ -45,108 +124,61 @@ BANNER_FILE=./assets/banner.jpg
 
 ### Emojis personalizados
 
-Al arrancar, el bot sube los PNG de `assets/emojis/` como **emojis de la aplicación** (con el prefijo `lbot_`) y guarda sus IDs en `assets/emojis.json` para no volver a subirlos.
+Los PNG de `assets/emojis/` se sincronizan como emojis de aplicación con el prefijo `lbot_`. Sus IDs se guardan en `assets/emojis.json` para reutilizarlos.
 
-- El pack tiene una versión interna: al cambiar el diseño, el bot elimina los emojis antiguos y sube los nuevos automáticamente en el siguiente arranque.
-- Si `CUSTOM_EMOJIS=false`, o la subida falla (por ejemplo, sin conexión), se usan emojis unicode de reserva.
-- Para regenerar el pack de emojis y el banner optimizado: `powershell -ExecutionPolicy Bypass -File scripts/build-assets.ps1` (usa `assets/Banner.png` como origen y `assets/emojis-preview.png` como previsualización).
-- Discord permite un máximo de 2000 emojis de aplicación; el pack actual usa 32.
+Cuando cambia la versión interna del pack, el bot elimina los emojis antiguos y sube la versión nueva al arrancar.
 
+Para regenerar el banner y el pack:
 
-## 🚀 Instalación
-
-### 1. Crear el bot
-
-1. Ve a <https://discord.com/developers/applications> → **New Application**.
-2. En **Bot**, pulsa **Add Bot** y copia el **TOKEN**.
-3. Activa los **Privileged Gateway Intents**:
-   - ✅ SERVER MEMBERS INTENT
-   - ✅ MESSAGE CONTENT INTENT *(opcional)*
-4. Copia el **CLIENT ID** desde **OAuth2 → General**.
-
-### 2. Invitar el bot
-
-En **OAuth2 → URL Generator** selecciona los scopes `bot` y `applications.commands`, y el permiso **Administrator** (recomendado; necesario para restaurar todo).
-
-> El rol del bot debe estar **por encima** de los roles que quiera crear o editar.
-
-### 3. Configurar
-
-```cmd
-npm install
-copy .env.example .env
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/build-assets.ps1
 ```
 
-Edita `.env` con tu token y tu client ID:
+## Qué se guarda
 
-```env
-DISCORD_TOKEN=tu_token
-CLIENT_ID=tu_client_id
-```
+- Roles, color, posición, permisos y configuración.
+- Categorías y canales con sus permisos.
+- Texto, voz, foros, hilos y ajustes compatibles.
+- Emojis personalizados y expulsiones opcionales.
+- Nombre, icono, banner, descripción y ajustes generales del servidor.
+- Canal AFK, canal del sistema, verificación, filtros y notificaciones.
 
-### 4. Arrancar
+Los permisos individuales solo pueden restaurarse para miembros que todavía formen parte del servidor destino.
 
-```cmd
-npm start
-```
+## Backups automáticos
 
-## 🧩 Comandos
+- Se ejecuta un ciclo automático según `BACKUP_INTERVAL_MINUTES`.
+- Se crea un primer ciclo 15 segundos después del arranque.
+- Los contenidos idénticos no generan duplicados.
+- Los backups manuales no se eliminan automáticamente.
+- El canal definido en `BACKUP_LOG_CHANNEL_ID` puede recibir avisos.
 
-| Comando | Función |
-| --- | --- |
-| `/hacerbackup` | Crea una copia completa al instante. |
-| `/backups` | Gestor visual: listar, ver detalle, restaurar o eliminar. |
-| `/reconstruir codigo [modo] [sanciones]` | Restaura un backup (autocompletado de códigos). |
-| `/darrol rol` | Da un rol a todos los miembros con confirmación. |
-| `/limpiar` | Vacía canales y roles, pidiendo confirmación. |
-| `/estado` | Estado del bot, intervalo, retención y último backup. |
-| `/ayuda` | Guía visual de comandos. |
+## Seguridad
 
-Todos los paneles incluyen botones para gestionar sin escribir más comandos.
+- Nunca compartas `DISCORD_TOKEN`.
+- Mantén `.env` fuera del control de versiones.
+- Protege la carpeta `backups/`; contiene IDs y configuración del servidor.
+- Cifra o elimina información sensible antes de subir backups a una nube.
 
-## ♻️ Modos de restauración
+## Solución de problemas
 
-- **Conservar y restaurar** (recomendado): crea o actualiza roles, canales y permisos sin borrar nada.
-- **Reemplazar todo**: elimina los canales y roles actuales y reconstruye el servidor desde cero (incluye nombre, icono, banner y descripción).
+**No aparecen los comandos**
 
-Al restaurar se aplican también los ajustes del servidor, emojis y, opcionalmente, las expulsiones.
+- Comprueba el token y el client ID.
+- Espera unos minutos si los comandos fueron registrados globalmente.
+- Ejecuta con `GUILD_ID` para pruebas instantáneas.
+- Reinicia el cliente de Discord con `Ctrl+R` si aparecen comandos antiguos.
 
-## 🔄 Backups automáticos
+**Falta permisos al restaurar**
 
-- Se ejecuta un ciclo cada `BACKUP_INTERVAL_MINUTES` (60 por defecto) y uno 15 s después de arrancar.
-- Si nada ha cambiado desde el último backup, **no se duplica** el archivo (huella de contenido).
-- Se conservan los últimos `MAX_BACKUPS_PER_GUILD` backups automáticos por servidor. Los manuales nunca se borran solos.
-- Si defines `BACKUP_LOG_CHANNEL_ID`, se publica un embed de aviso en ese canal.
+- Otorga permiso de Administrador al bot.
+- Mueve el rol del bot por encima de los roles que quiera modificar.
 
-## ⚠️ Importante
+**No se crean backups**
 
-- Guarda tu carpeta `backups/` en un lugar seguro: contiene los IDs y la configuración del servidor.
-- Los permisos individuales de **miembros** solo se restauran si el usuario sigue en el servidor destino (Discord no permite asignar permisos a alguien que no está).
-- Los iconos de rol y el banner del servidor requieren las mejoras/condiciones de Discord correspondientes; si no se pueden aplicar, el bot continúa y lo indica en los avisos.
-- No se pueden restaurar mensajes ni hilos (limitación de la API de Discord).
-- Los comandos solo están disponibles para **Administradores**.
+- Espera el primer ciclo de 15 segundos o usa `/hacerbackup`.
+- Comprueba los permisos y el valor de `BACKUP_INTERVAL_MINUTES`.
 
-## 🐛 Solución de problemas
+## Licencia
 
-**El bot no responde o ves comandos duplicados**
-- Revisa que `DISCORD_TOKEN` y `CLIENT_ID` sean correctos.
-- Al arrancar, el bot sincroniza los comandos y elimina registros antiguos (incluidos los de servidor que quedaron de versiones anteriores).
-- Si definiste `GUILD_ID`, los comandos aparecen al instante en ese servidor; si no, se registran globalmente y Discord puede tardar unos minutos.
-- Tras reiniciar, actualiza el cliente de Discord con `Ctrl+R` si aún ves las entradas antiguas.
-
-**`Missing Permissions` al restaurar**
-- El bot necesita **Administrador**.
-- Comprueba que el rol del bot esté por encima de los roles que intenta crear.
-
-**No hay backups**
-- Espera 15 s al arrancar o usa `/hacerbackup`.
-
-## 🔒 Seguridad
-
-- Nunca compartas tu token.
-- `.env` y `backups/` están excluidos de git.
-- Cifra o mueve los backups si los subes a la nube.
-
-## 📄 Licencia
-
-ISC
+Distribuido bajo la licencia Apache License 2.0. Consulta el archivo [LICENSE](LICENSE).
